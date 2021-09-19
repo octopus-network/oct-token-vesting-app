@@ -176,11 +176,11 @@ const Chart = () => {
               </linearGradient>
             </defs>
             <YAxis hide={true} domain={[lowestPrice, highestPrice]} />
-            <XAxis axisLine={false} tickLine={false} minTickGap={150}
+            <XAxis axisLine={false} tickLine={false} minTickGap={150} tick={{ fontSize: 14 }}
               dataKey="humanTime" interval="preserveStartEnd" />
             <Tooltip position={{ y: 0 }} content={<CustomTooltip />} />
             <Area type="monotone" strokeWidth={2} dataKey="price"
-              stroke="#e3964e" fill="url(#colorPrice)"/>
+              stroke="#e3964e" fill="url(#colorPrice)" />
           </AreaChart>
         </ResponsiveContainer>
       </Box>

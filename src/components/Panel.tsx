@@ -85,7 +85,7 @@ const Panel = ({ contract }) => {
               addedTime: new Date().getTime(),
               hash,
               from: account,
-              summary: `Withdrawed OCT`
+              summary: `Withdraw OCT`
             });
             setTimeout(() => {
               setIsWithdrawing(false);
@@ -96,7 +96,6 @@ const Panel = ({ contract }) => {
         });
         
     } catch({code, message}) {
-      console.log(code, message);
       if (code === 4001) {
         setModalMessage('Transaction rejected.');
       } else if (message) {
@@ -120,34 +119,30 @@ const Panel = ({ contract }) => {
           <Text>Refresh</Text>
         </Flex>
       </Flex>
+      <Skeleton isLoaded={!isRefreshing}>
       <Box mt={6} p={4} bg="rgba(120, 120, 150, .06)" borderRadius={5}>
         <VStack spacing={3} alignItems="flex-start">
           <Flex color="gray" alignItems="flex-end">
             <Text minW="140px" fontSize="sm" mr={1}>Total Benefit: </Text>
-            <Skeleton isLoaded={!!totalBenefit}>
-              <Heading fontSize="md" color="black">{totalBenefit} OCT</Heading>
-            </Skeleton>
+            <Heading fontSize="md" color="black">{totalBenefit} OCT</Heading>
           </Flex>
           <Flex color="gray" alignItems="flex-end">
             <Text minW="140px" fontSize="sm" mr={1}>Unreleased Balance: </Text>
-            <Skeleton isLoaded={!!unreleasedBalance}>
-              <Heading fontSize="md" color="black">{unreleasedBalance} OCT</Heading>
-            </Skeleton>
+            <Heading fontSize="md" color="black">{unreleasedBalance} OCT</Heading>
           </Flex>
           <Flex color="gray" alignItems="flex-end">
             <Text minW="140px" fontSize="sm" mr={1}>Released Balance: </Text>
-            <Skeleton isLoaded={!!releasedBalance}>
-              <Heading fontSize="md" color="black">{releasedBalance} OCT</Heading>
-            </Skeleton>
+            <Heading fontSize="md" color="black">{releasedBalance} OCT</Heading>
           </Flex>
         </VStack>
       </Box>
+      </Skeleton>
       <Box mt={6}>
         <Button isFullWidth={true} size="lg" variant="solid" onClick={onWithdraw} isLoading={isWithdrawing}
           isDisabled={!contract || isWithdrawing || !account}  borderRadius="30" colorScheme="octoColor">Withdraw</Button>
       </Box>
       <Center mt={2}>
-        <Skeleton isLoaded={!!withdrawedBalance}>
+        <Skeleton isLoaded={!isRefreshing}>
           <Text color="gray" fontSize="sm">Withdrawed: {withdrawedBalance} OCT</Text>
         </Skeleton>
       </Center>
