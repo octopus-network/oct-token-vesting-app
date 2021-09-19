@@ -144,7 +144,7 @@ const Panel = ({ contract }) => {
       </Box>
       <Box mt={6}>
         <Button isFullWidth={true} size="lg" variant="solid" onClick={onWithdraw} isLoading={isWithdrawing}
-          isDisabled={!contract || isWithdrawing}  borderRadius="30" colorScheme="octoColor">Withdraw</Button>
+          isDisabled={!contract || isWithdrawing || !account}  borderRadius="30" colorScheme="octoColor">Withdraw</Button>
       </Box>
       <Center mt={2}>
         <Skeleton isLoaded={!!withdrawedBalance}>

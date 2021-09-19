@@ -26,12 +26,15 @@ const localVestingAddress = window.localStorage.getItem('oct-vesting-address');
 
 const Welcome = ({ onOpen }) => {
   const [vestingAddress, setVestingAddress] = useState(localVestingAddress || '');
-  const { library, chainId } = useWeb3React();
+  const { library, chainId, account } = useWeb3React();
   const toast = useToast();
 
   const _onOpen = () => {
     window.localStorage.setItem('oct-vesting-address', vestingAddress);
     try {
+      if (!account) {
+        throw Error('Please connect to your wallet first');
+      }
       const web3 = new Web3(library.provider);
       const contract = new web3.eth.Contract(vestingAbi as any, vestingAddress);
       onOpen(contract);
