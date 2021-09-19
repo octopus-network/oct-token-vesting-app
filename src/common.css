@@ -1,0 +1,13 @@
+body {
+  background: linear-gradient(to bottom, #f5f6f9, #fff 30%)!important;
+  background-repeat: repeat-x!important;
+}
+
+@keyframes rotate360 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
