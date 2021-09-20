@@ -160,7 +160,7 @@ const Panel = ({ contract }) => {
           </Flex>
           <Flex color="gray" alignItems="flex-end">
             <HStack minW="120px" fontSize="sm">
-            <Tooltip label="Released balance, totalBenefi * the days passed since releaseStartTime / daysOfTimelock">
+            <Tooltip label="Released balance, totalBenefit * the days passed since releaseStartTime / daysOfTimelock">
               <QuestionOutlineIcon />
             </Tooltip>
             <Text>Released:</Text>
