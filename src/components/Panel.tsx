@@ -126,7 +126,6 @@ const Panel = ({ contract }) => {
  
   return (
     <>
-    <Skeleton isLoaded={!isRefreshing && !!account}>
     <Box p={6} pb={8} boxShadow="octoShadow" borderRadius="8" bg="#fff">
       <Flex alignItems="center" justifyContent="space-between">
         <Heading fontSize="2xl">My Vesting</Heading>
@@ -138,6 +137,7 @@ const Panel = ({ contract }) => {
           </Flex>
         }
       </Flex>
+      <Skeleton isLoaded={!isRefreshing && !!account}>
       <Box p={4} mt={6} bg="rgba(120, 120, 150, .06)" borderRadius={5}>
         <VStack spacing={3} alignItems="flex-start">
           <Flex color="gray" alignItems="flex-end">
@@ -183,14 +183,16 @@ const Panel = ({ contract }) => {
           </Flex>
         </VStack>
       </Box>
+      </Skeleton>
       <Box mt={4}>
+        <Skeleton isLoaded={!isRefreshing && account}>
         <Button isFullWidth={true} size="lg" variant="solid" onClick={onWithdraw} isLoading={isWithdrawing}
           isDisabled={!contract || isWithdrawing || !account || withdrawedBalance.gte(releasedBalance)}  borderRadius="30" colorScheme="octoColor">
           { withdrawedBalance.gte(releasedBalance) ? 'Withdrawed' : `Withdraw ${beautifyAmount(releasedBalance.minus(withdrawedBalance))} OCT` }
         </Button>
+        </Skeleton>
       </Box>
     </Box>
-    </Skeleton>
     <Flex mt={4} color="gray" fontSize="sm" borderRadius={5} justifyContent="center">
       <Text mr={1}>Contract:</Text>
       <Link href={`${explorerUrl}/address/${contract?.options.address}`} ml={1} target="_blank">
