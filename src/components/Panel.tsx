@@ -47,6 +47,7 @@ const Panel = ({ contract }) => {
   const [withdrawedBalance, setWithdrawedBalance] = useState(ZERO);
   const [beneficiary, setBeneficiary] = useState('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [isWithdrawed, setIsWithdrawed] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useBoolean();
@@ -96,6 +97,7 @@ const Panel = ({ contract }) => {
               summary: `Withdraw OCT`
             });
             setTimeout(() => {
+              setIsWithdrawed(true);
               setIsWithdrawing(false);
             }, 1500);
           }
@@ -187,8 +189,14 @@ const Panel = ({ contract }) => {
       <Box mt={4}>
         <Skeleton isLoaded={!isRefreshing && !!account}>
         <Button isFullWidth={true} size="lg" variant="solid" onClick={onWithdraw} isLoading={isWithdrawing}
-          isDisabled={!contract || isWithdrawing || !account || withdrawedBalance.gte(releasedBalance)}  borderRadius="30" colorScheme="octoColor">
-          { withdrawedBalance.gte(releasedBalance) ? 'Withdrawed' : `Withdraw ${beautifyAmount(releasedBalance.minus(withdrawedBalance))} OCT` }
+          isDisabled={
+            isWithdrawed || !contract || isWithdrawing || 
+            !account || withdrawedBalance.gte(releasedBalance)
+          }  borderRadius="30" colorScheme="octoColor">
+          { 
+            withdrawedBalance.gte(releasedBalance) || isWithdrawed ? 'Withdrawed' : 
+            `Withdraw ${beautifyAmount(releasedBalance.minus(withdrawedBalance))} OCT` 
+          }
         </Button>
         </Skeleton>
       </Box>
