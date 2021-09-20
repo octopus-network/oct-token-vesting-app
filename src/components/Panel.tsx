@@ -204,7 +204,7 @@ const Panel = ({ contract }) => {
     </Flex>
     <Modal isOpen={isModalOpen} onClose={setIsModalOpen.off}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent ml={2} mr={2}>
         <ModalHeader>Error</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
