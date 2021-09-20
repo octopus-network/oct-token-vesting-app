@@ -49,7 +49,7 @@ const Overview = () => {
     <>
     <Flex alignItems="center" justifyContent="space-between">
       <Heading fontSize="2xl">Market Overview</Heading>
-      <Link href="https://www.coingecko.com/en/coins/octopus-network" target="_blank">
+      <Link href="https://www.coingecko.com/en/coins/octopus-network" target="_blank" color="gray">
         <Flex alignItems="center" fontSize="sm">
           Detail <ExternalLinkIcon ml={1} />
         </Flex>
