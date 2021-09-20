@@ -11,3 +11,7 @@ body {
     transform: rotate(360deg);
   }
 }
+
+#chakra-toast-manager-top-right {
+  margin-top: 65px;
+}

@@ -14,6 +14,8 @@ import {
 
 import { FcComboChart, FcCurrencyExchange, FcGlobe } from 'react-icons/fc';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
+import { beautifyAmount } from 'utils/formatBalance';
+
 import useSWR from 'swr';
 
 const StatBox = ({ title, value, icon }) => {
@@ -56,14 +58,14 @@ const Overview = () => {
       </Link>
     </Flex>
     <SimpleGrid columns={3} spacing="8" mt="6">
-      <StatBox title="Circulation" value={circulation ? `${circulation} OCT` : ''} 
+      <StatBox title="Circulation" value={circulation ? `${beautifyAmount(circulation)} OCT` : ''} 
         icon={<Icon as={FcComboChart} w="6" h="6" />} />
       <StatBox title="Market Cap" value={
         coinData && circulation ? 
-        '$' + (coinData.market_data.current_price.usd * circulation).toFixed(2) : ''
+        '$' + beautifyAmount(coinData.market_data.current_price.usd * circulation) : ''
       } icon={<Icon as={FcGlobe} w="6" h="6" />} />
       <StatBox title="24 Hour Trading Vol" value={
-        coinData ? '$' + coinData.market_data.total_volume.usd : ''
+        coinData ? '$' + beautifyAmount(coinData.market_data.total_volume.usd) : ''
       } icon={<Icon as={FcCurrencyExchange} w="6" h="6" />} />
     </SimpleGrid>
     </>

@@ -26,7 +26,6 @@ import {
 import { CloseIcon } from '@chakra-ui/icons';
 import { AiOutlineGithub } from 'react-icons/ai';
 import { HiOutlineArrowNarrowRight } from 'react-icons/hi';
-import { BiDoorOpen } from 'react-icons/bi';
 import vestingAbi from 'abis/vesting.json';
 import otto from 'assets/otto.png';
 
