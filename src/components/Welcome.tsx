@@ -79,7 +79,7 @@ const Welcome = ({ onOpen }) => {
           <Box w="96px" h="123px">
             <Image src={otto} w="96px" />
           </Box>
-          <Heading>Welcome Back~</Heading>
+          <Heading>Welcome Back :)</Heading>
           <Text color="gray">Open with your vesting contract</Text>
         </VStack>
         <Box mt={12}>

@@ -185,7 +185,7 @@ const Panel = ({ contract }) => {
       </Box>
       </Skeleton>
       <Box mt={4}>
-        <Skeleton isLoaded={!isRefreshing && account}>
+        <Skeleton isLoaded={!isRefreshing && !!account}>
         <Button isFullWidth={true} size="lg" variant="solid" onClick={onWithdraw} isLoading={isWithdrawing}
           isDisabled={!contract || isWithdrawing || !account || withdrawedBalance.gte(releasedBalance)}  borderRadius="30" colorScheme="octoColor">
           { withdrawedBalance.gte(releasedBalance) ? 'Withdrawed' : `Withdraw ${beautifyAmount(releasedBalance.minus(withdrawedBalance))} OCT` }
