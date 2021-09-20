@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
+import BigNumber from 'bignumber.js';
 
 import {
   Box,
@@ -17,14 +18,19 @@ import {
   ModalCloseButton,
   ModalHeader,
   ModalBody,
-  Icon
+  Icon,
+  Link,
+  HStack,
+  Divider,
+  Tooltip
 } from '@chakra-ui/react';
 
 import styled from 'styled-components';
+import { ExternalLinkIcon, QuestionOutlineIcon } from '@chakra-ui/icons';
 import { useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
 import { AiOutlineWarning } from 'react-icons/ai';
-import { getBalanceAmount, beautifyAmount } from 'utils/formatBalance';
+import { getBalanceAmount, beautifyAmount, ZERO } from 'utils/formatBalance';
 import useTxns from 'hooks/useTransactions';
 
 const RefreshIcon = styled(Icon)<{ refreshing: boolean; }>`
@@ -33,36 +39,38 @@ const RefreshIcon = styled(Icon)<{ refreshing: boolean; }>`
 `;
 
 const Panel = ({ contract }) => {
-  const { account } = useWeb3React();
-  const [totalBenefit, setTotalBenefit] = useState('');
-  const [unreleasedBalance, setUnreleasedBalance] = useState('');
-  const [releasedBalance, setReleasedBalance] = useState('');
-  const [withdrawedBalance, setWithdrawedBalance] = useState('');
+  
+  const { account, chainId } = useWeb3React();
+  const [totalBenefit, setTotalBenefit] = useState(ZERO);
+  const [unreleasedBalance, setUnreleasedBalance] = useState(ZERO);
+  const [releasedBalance, setReleasedBalance] = useState(ZERO);
+  const [withdrawedBalance, setWithdrawedBalance] = useState(ZERO);
+  const [beneficiary, setBeneficiary] = useState('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useBoolean();
   const { appendTx } = useTxns();
 
-  useEffect(() => {
-    if (!contract) {
-      return;
-    }
-    onRefresh();
-  }, [contract]);
+  const explorerUrl = chainId === 1 ? 'https://www.etherscan.io' : 'https://ropsten.etherscan.io';
 
   const onRefresh = () => {
+    if (!account) {
+      return;
+    }
     setIsRefreshing(true);
     Promise.all([
       contract.methods.totalBenefit().call(),
       contract.methods.unreleasedBalance().call(),
       contract.methods.releasedBalance().call(),
       contract.methods.withdrawedBalance().call(),
-    ]).then(([benefit, unreleased, released, withdrawed]) => {
-      setTotalBenefit(beautifyAmount(getBalanceAmount(benefit)));
-      setUnreleasedBalance(beautifyAmount(getBalanceAmount(unreleased)));
-      setReleasedBalance(beautifyAmount(getBalanceAmount(released)));
-      setWithdrawedBalance(beautifyAmount(getBalanceAmount(withdrawed)));
+      contract.methods.beneficiary().call(),
+    ]).then(([benefit, unreleased, released, withdrawed, tmpBeneficiary]) => {
+      setTotalBenefit(getBalanceAmount(benefit));
+      setUnreleasedBalance(getBalanceAmount(unreleased));
+      setReleasedBalance(getBalanceAmount(released));
+      setWithdrawedBalance(getBalanceAmount(withdrawed));
+      setBeneficiary(tmpBeneficiary);
       setTimeout(() => {
         setIsRefreshing(false);
       }, 300);
@@ -109,44 +117,89 @@ const Panel = ({ contract }) => {
     
   }
 
+  useEffect(() => {
+    if (!contract) {
+      return;
+    }
+    onRefresh();
+  }, [contract]);
+ 
   return (
     <>
     <Box p={6} pb={8} boxShadow="octoShadow" borderRadius="8" bg="#fff">
       <Flex alignItems="center" justifyContent="space-between">
-        <Heading fontSize="2xl">Vesting Info</Heading>
-        <Flex fontSize="sm" onClick={onRefresh} color="gray" cursor="pointer" alignItems="center">
-          <RefreshIcon refreshing={isRefreshing} as={MdRefresh} w="4" h="4" />
-          <Text>Refresh</Text>
-        </Flex>
+        <Heading fontSize="2xl">My Vesting</Heading>
+        {
+          account &&
+          <Flex fontSize="sm" onClick={onRefresh} color="gray" cursor="pointer" alignItems="center">
+            <RefreshIcon refreshing={isRefreshing ? 1 : 0} as={MdRefresh} w="4" h="4" />
+            <Text>Refresh</Text>
+          </Flex>
+        }
       </Flex>
-      <Skeleton isLoaded={!isRefreshing}>
-      <Box mt={6} p={4} bg="rgba(120, 120, 150, .06)" borderRadius={5}>
+      <Skeleton isLoaded={!isRefreshing && !!account}>
+      <Box p={4} mt={6} bg="rgba(120, 120, 150, .06)" borderRadius={5}>
         <VStack spacing={3} alignItems="flex-start">
           <Flex color="gray" alignItems="flex-end">
-            <Text minW="140px" fontSize="sm" mr={1}>Total Benefit: </Text>
-            <Heading fontSize="md" color="black">{totalBenefit} OCT</Heading>
+            <HStack minW="120px" fontSize="sm">
+            <Tooltip label="The total amount of OCT token that the beneficiary can withdraw during the timelock duration">
+              <QuestionOutlineIcon />
+            </Tooltip>
+            <Text>Total Benefit:</Text>
+            </HStack>
+            <Heading fontSize="md" color="black">{beautifyAmount(totalBenefit)} OCT</Heading>
           </Flex>
           <Flex color="gray" alignItems="flex-end">
-            <Text minW="140px" fontSize="sm" mr={1}>Unreleased Balance: </Text>
-            <Heading fontSize="md" color="black">{unreleasedBalance} OCT</Heading>
+            <HStack minW="120px" fontSize="sm">
+            <Tooltip label="Unreleased balance">
+              <QuestionOutlineIcon />
+            </Tooltip>
+            <Text>Unreleased:</Text>
+            </HStack>
+            <Heading fontSize="md" color="black">{beautifyAmount(unreleasedBalance)} OCT</Heading>
           </Flex>
           <Flex color="gray" alignItems="flex-end">
-            <Text minW="140px" fontSize="sm" mr={1}>Released Balance: </Text>
-            <Heading fontSize="md" color="black">{releasedBalance} OCT</Heading>
+            <HStack minW="120px" fontSize="sm">
+            <Tooltip label="Released balance, totalBenefi * the days passed since releaseStartTime / daysOfTimelock">
+              <QuestionOutlineIcon />
+            </Tooltip>
+            <Text>Released:</Text>
+            </HStack>
+            <Heading fontSize="md" color="black">{beautifyAmount(releasedBalance)} OCT</Heading>
+          </Flex>
+          <Flex color="gray" alignItems="flex-end">
+            <HStack minW="120px" fontSize="sm">
+            <Tooltip label="Beneficiary of tokens after they are released">
+              <QuestionOutlineIcon />
+            </Tooltip>
+            <Text>Beneficiary:</Text>
+            </HStack>
+            <Link href={`${explorerUrl}/address/${beneficiary}`} target="_blank">
+              <HStack color="octoColor.500" fontSize="sm">
+              <Text overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap" maxW="100px">{beneficiary}</Text>
+              <ExternalLinkIcon />
+              </HStack>
+            </Link>
           </Flex>
         </VStack>
       </Box>
       </Skeleton>
-      <Box mt={6}>
+      <Box mt={4}>
         <Button isFullWidth={true} size="lg" variant="solid" onClick={onWithdraw} isLoading={isWithdrawing}
-          isDisabled={!contract || isWithdrawing || !account}  borderRadius="30" colorScheme="octoColor">Withdraw</Button>
+          isDisabled={!contract || isWithdrawing || !account || withdrawedBalance.gte(releasedBalance)}  borderRadius="30" colorScheme="octoColor">
+          { withdrawedBalance.gte(releasedBalance) ? 'Withdrawed' : `Withdraw ${beautifyAmount(releasedBalance.minus(withdrawedBalance))} OCT` }
+        </Button>
       </Box>
-      <Center mt={2}>
-        <Skeleton isLoaded={!isRefreshing}>
-          <Text color="gray" fontSize="sm">Withdrawed: {withdrawedBalance} OCT</Text>
-        </Skeleton>
-      </Center>
     </Box>
+    <Flex mt={4} color="gray" fontSize="sm" borderRadius={5} justifyContent="center">
+      <Text mr={1}>Contract:</Text>
+      <Link href={`${explorerUrl}/address/${contract?.options.address}`} ml={1} target="_blank">
+        <HStack>
+        <Text overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap" maxW="200px">{contract?.options.address}</Text>
+        <ExternalLinkIcon />
+        </HStack>
+      </Link>
+    </Flex>
     <Modal isOpen={isModalOpen} onClose={setIsModalOpen.off}>
       <ModalOverlay />
       <ModalContent>

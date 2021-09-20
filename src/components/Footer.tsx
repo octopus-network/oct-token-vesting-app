@@ -12,6 +12,7 @@ import {
 import { getBalanceAmount, beautifyAmount } from 'utils/formatBalance';
 import { useTokenContract } from 'hooks/useContract';
 import AccountModal from './AccountModal';
+import ConnectWalletModal from './ConnectWalletModal';
 import AccountBox from './AccountBox';
 import Polling from './Polling';
 
@@ -41,7 +42,7 @@ const Footer = () => {
     } else {
       setAccountBalance('0.00');
     }
-  }, [tokenContract, account]);
+  }, [tokenContract, account, setWalletModalOpen, walletModalOpen]);
 
   return (
     <>
@@ -58,6 +59,7 @@ const Footer = () => {
         <Polling />
       </Flex>
     </Container>
+    <ConnectWalletModal isOpen={walletModalOpen} onClose={setWalletModalOpen.off} />
     <AccountModal isOpen={accountModalOpen} onClose={setAccountModalOpen.off} />
     </>
   )

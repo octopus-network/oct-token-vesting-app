@@ -45,14 +45,12 @@ const Overview = () => {
     (url) => axios.get(url).then(res => res.data)
   );
 
-  console.log(coinData);
-
   return (
     <>
     <Flex alignItems="center" justifyContent="space-between">
-      <Heading fontSize="2xl">Overview</Heading>
+      <Heading fontSize="2xl">Market Overview</Heading>
       <Link href="https://www.coingecko.com/en/coins/octopus-network" target="_blank">
-        <Flex alignItems="center" fontSize="sm" color="gray">
+        <Flex alignItems="center" fontSize="sm">
           Detail <ExternalLinkIcon ml={1} />
         </Flex>
       </Link>

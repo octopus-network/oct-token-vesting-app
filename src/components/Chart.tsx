@@ -9,7 +9,6 @@ import {
   Tooltip, 
   YAxis,
   ResponsiveContainer,
-  Line
 } from 'recharts';
 
 import {
@@ -23,7 +22,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 
-import useSWR, { SWRConfig } from 'swr';
+import useSWR from 'swr';
 
 import {
   TriangleUpIcon,
@@ -54,7 +53,7 @@ const Chart = () => {
 
   const [days, setDays] = useState(1);
 
-  let lowestPrice = 999999, highestPrice = 0;
+  let lowestPrice = useRef(999999), highestPrice = useRef(0);
   const [currentTimePrice, setCurrentTimePrice] = useState([0, 0]);
   const [lastTimePrice, setLastTimePrice] = useState([0, 0]);
 
@@ -63,7 +62,10 @@ const Chart = () => {
   const [prices, setPrices] = useState([]);
   const [klineData, setKlineData] = useState([]);
 
-  const { data: marketChart } = useSWR(() => `octopus-network/market_chart?vs_currency=usd&days=${days}`);
+  const { data: marketChart } = useSWR(
+    () => `https://api.coingecko.com/api/v3/coins/octopus-network/market_chart?vs_currency=usd&days=${days}`,
+    (url) => axios.get(url).then(res => res.data)
+  );
 
   useEffect(() => {
     if (!marketChart) {
@@ -102,7 +104,7 @@ const Chart = () => {
   }, [prices]);
 
   useEffect(() => {
-    if (lastTimePrice[1] == 0) {
+    if (lastTimePrice[1] === 0) {
       setChangedPercent(0);
     } else {
       setChangedPercent(
@@ -136,15 +138,15 @@ const Chart = () => {
     
     <Box>
       <Flex alignItems="center" justifyContent="space-between">
-        <Heading fontSize="2xl">Price Chart</Heading>
+        <Heading fontSize="2xl">OCT Price Chart</Heading>
       </Flex>
       <Flex justifyContent="space-between" alignItems="center" mt="4">
         <HStack spacing="3">
           <Skeleton isLoaded={prices.length > 0}>
-          <Heading fontSize="xl">{currentTimePrice[1].toFixed(2)} USD</Heading>
+          <Heading fontSize="lg">{currentTimePrice[1].toFixed(2)} USD</Heading>
           </Skeleton>
           {
-            changedPercent != 0 &&
+            changedPercent !== 0 &&
             <Flex color={changedPercent < 0 ? 'red' : 'green' } alignItems="center" fontSize="sm">
               {changedPercent < 0 ? <TriangleDownIcon /> : <TriangleUpIcon /> }
               <Text ml="1">{changedPercent.toFixed(2)}%</Text>
@@ -175,7 +177,7 @@ const Chart = () => {
                 <stop offset="70%" stopColor="#e3964e" stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <YAxis hide={true} domain={[lowestPrice, highestPrice]} />
+            <YAxis hide={true} domain={[lowestPrice.current, highestPrice.current]} />
             <XAxis axisLine={false} tickLine={false} minTickGap={150} tick={{ fontSize: 14 }}
               dataKey="humanTime" interval="preserveStartEnd" />
             <Tooltip position={{ y: 0 }} content={<CustomTooltip />} />
@@ -189,26 +191,4 @@ const Chart = () => {
   );
 }
 
-const ChartWithSWR = () => (
-  <SWRConfig 
-    value={{
-      refreshInterval: 5000,
-      fetcher: (api, data) => {
-        return axios({
-          url: `https://api.coingecko.com/api/v3/coins/${api}`,
-          method: 'get',
-          data,
-          withCredentials: false,
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        }).then(res => res.data)
-      }
-    }}
-  >
-    <Chart />
-  </SWRConfig>
-);
-
-export default ChartWithSWR;
+export default Chart;

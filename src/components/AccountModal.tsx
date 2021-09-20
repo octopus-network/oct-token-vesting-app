@@ -48,32 +48,32 @@ const AccountModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent ml={2} mr={2}>
         <ModalHeader>Account</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Box borderRadius="10" p="4" border="1px solid #eee">
+          <Box borderRadius={10} p={4} border="1px solid #eee">
             <Flex justifyContent="space-between" alignItems="center">
               <Text color="gray">Connected Account</Text>
               <Button size="sm" variant="outline" onClick={onLogout}>Logout</Button>
             </Flex>
-            <Flex alignItems="center" mt="2">
+            <Flex alignItems="center" mt={2}>
               <StatusIcon />
-              <Heading fontSize="xl" mr="1">{account?.substr(0, 6)}...{account?.substr(-4)}</Heading>
+              <Heading fontSize="xl" ml={1}>{account?.substr(0, 6)}...{account?.substr(-4)}</Heading>
             </Flex>
-            <HStack alignItems="center" mt="2" spacing="4">
+            <HStack alignItems="center" mt={2} spacing={4}>
               <Button variant="unstyled" size="sm" color="gray" onClick={onCopy}>
-                { hasCopied ? <CheckIcon mr="1" /> : <CopyIcon mr="1" /> }
+                { hasCopied ? <CheckIcon mr={1} /> : <CopyIcon mr={1} /> }
                 { hasCopied ? 'Copied' : 'Copy Address' }
               </Button>
               <Button as={Link} variant="link" size="sm" color="gray" href={`${explorerUrl}/address/${account}`} target="_blank">
-                <ExternalLinkIcon mr="1" /> View on Explorer
+                <ExternalLinkIcon mr={1} /> View on Explorer
               </Button>
             </HStack>
           </Box>
           
         </ModalBody>
-        <Box bg="#f3f3f9" p="4" mt="2" borderBottomRadius="8">
+        <Box bg="#f3f3f9" p={4} mt={2} borderBottomRadius="8">
           {
             txns.length ?
             <>
@@ -81,7 +81,7 @@ const AccountModal = ({
                 <Text>Recent Transactions</Text>
                 <Button variant="unstyled" size="sm" color="red" onClick={clearTxns}>Clear All</Button>
               </Flex> 
-              <List spacing="3" mt="3" maxH="180px" overflowY="auto">
+              <List spacing={3} mt={3} maxH="180px" overflowY="auto">
                 {
                   txns.map((tx, idx) => (
                     <ListItem key={`tx-${idx}`}>

@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 
+export const ZERO = new BigNumber(0);
 /**
  * Take a formatted amount, e.g. 15 BNB and convert it to full decimal value, e.g. 15000000000000000
  */

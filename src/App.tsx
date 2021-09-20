@@ -11,6 +11,7 @@ import {
 
 import { Web3ReactProvider } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
+import { SWRConfig } from 'swr';
 
 import Header from 'components/Header';
 import Footer from 'components/Footer';
@@ -36,30 +37,37 @@ const App = () => {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <Transactions>
-        <ChakraProvider theme={defaultTheme}>
-          <Header />
-          <Container maxW="container.xl" p="20px" minH="calc(100vh - 162px)">
-            {
-              vestingContract ? 
-              <Grid templateColumns={isDesktop ? 'repeat(9, 1fr)' : 'repeat(3, 1fr)'} gap="16">
-                {
-                  isDesktop &&
-                  <GridItem colSpan={6}>
-                    <Overview />
-                    <Box mt="12" />
-                    <Chart />
+        <SWRConfig 
+          value={{
+            refreshInterval: 3000,
+          }}
+        >
+          <ChakraProvider theme={defaultTheme}>
+            <Header />
+            <Container maxW="container.xl" p="20px" minH="calc(100vh - 162px)">
+              {
+                vestingContract ? 
+                <Grid templateColumns={isDesktop ? 'repeat(9, 1fr)' : 'repeat(3, 1fr)'} gap="16">
+                  {
+                    isDesktop &&
+                    <GridItem colSpan={6}>
+                      <Overview />
+                      <Box mt="12" />
+                      <Chart />
+                    </GridItem>
+                  }
+                  <GridItem colSpan={3}>
+                    <Panel contract={vestingContract} />
                   </GridItem>
-                }
-                <GridItem colSpan={3}>
-                  <Panel contract={vestingContract} />
-                </GridItem>
-              </Grid> :
-              <Welcome onOpen={contract => setVestingContract(contract)} />
-            }
-          </Container>
-          <Footer />
-        </ChakraProvider>
+                </Grid> :
+                <Welcome onOpen={contract => setVestingContract(contract)} />
+              }
+            </Container>
+            <Footer />
+          </ChakraProvider>
+        </SWRConfig>
       </Transactions>
+      
     </Web3ReactProvider>
   );
 }

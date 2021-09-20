@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Web3 from 'web3';
 import { useWeb3React } from '@web3-react/core';
+import styled from '@emotion/styled';
 
 import {
   Image,
@@ -14,19 +15,38 @@ import {
   Button,
   useToast,
   InputGroup,
+  Icon,
+  InputLeftElement,
   InputRightElement,
-  IconButton
+  IconButton,
+  Link,
+  Center
 } from '@chakra-ui/react';
 
 import { CloseIcon } from '@chakra-ui/icons';
+import { AiOutlineGithub } from 'react-icons/ai';
+import { HiOutlineArrowNarrowRight } from 'react-icons/hi';
+import { BiDoorOpen } from 'react-icons/bi';
 import vestingAbi from 'abis/vesting.json';
 import otto from 'assets/otto.png';
 
 const localVestingAddress = window.localStorage.getItem('oct-vesting-address');
 
+const OpenButton = styled(Button)`
+  svg {
+    transition: .6s ease;
+    transform: translateX(0px);
+  }
+  &:hover {
+    svg {
+      transform: translateX(5px);
+    }
+  }
+`;
+
 const Welcome = ({ onOpen }) => {
   const [vestingAddress, setVestingAddress] = useState(localVestingAddress || '');
-  const { library, chainId, account } = useWeb3React();
+  const { library, account } = useWeb3React();
   const toast = useToast();
 
   const _onOpen = () => {
@@ -53,7 +73,7 @@ const Welcome = ({ onOpen }) => {
   }
 
   return (
-    <Container maxW="480px">
+    <Container maxW="460px">
       <Flex flexDirection="column" pt={6}>
         <VStack>
           <Box w="96px" h="123px">
@@ -77,9 +97,18 @@ const Welcome = ({ onOpen }) => {
           </InputGroup>
         </Box>
         <Box mt={6}>
-          <Button size="lg" isFullWidth colorScheme="octoColor" onClick={_onOpen}
-            disabled={!vestingAddress}>Open</Button>
+          <OpenButton size="lg" isFullWidth colorScheme="octoColor" onClick={_onOpen}
+            disabled={!vestingAddress}>
+            <Text>Open</Text>
+            <Icon as={HiOutlineArrowNarrowRight} ml="2" />
+          </OpenButton>
         </Box>
+        <Box mt={4}>
+          <Button as={Link} fontSize="sm" fontWeight="normal" isFullWidth variant="link" href="https://github.com/octopus-network/oct-token-eth" target="_blank">
+            <Icon as={AiOutlineGithub} w={4} h={4} mr={1} /> Source Code
+          </Button>
+        </Box>
+        
       </Flex>
     </Container>
   );

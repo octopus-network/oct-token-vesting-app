@@ -62,9 +62,11 @@ const Polling = () => {
   const [isHover, setIsHover] = useState(false);
   const [blockNumber, setBlockNumber] = useState(0);
   const [isMounting, setIsMounting] = useState(false);
-  const { library } = useWeb3React();
+  const { library, chainId } = useWeb3React();
   
   const mountingTimerRef = useRef<any>();
+  const explorerUrl = chainId === 1 ? 'https://www.etherscan.io' : 'https://ropsten.etherscan.io';
+
   const onNewBlock = (block) => {
     setBlockNumber(block);
     setIsMounting(true);
@@ -84,7 +86,7 @@ const Polling = () => {
   }, [library]);
 
   return (
-    <Link href={`https://etherscan.io/block/${blockNumber}`} target="_blank">
+    <Link href={`${explorerUrl}/block/${blockNumber}`} target="_blank">
       <StyledPolling onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
         <StyledPollingNumber breathe={isMounting} hovering={isHover}>
           {blockNumber}

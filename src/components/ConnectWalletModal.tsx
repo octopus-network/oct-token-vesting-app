@@ -74,7 +74,7 @@ const ConnectWalletModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent ml={2} mr={2}>
         <ModalHeader>Connect to wallet</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -92,7 +92,7 @@ const ConnectWalletModal = ({
                       setActivatingConnector(currentConnector);
                       activate(connectorsByName[name]);
                     }} isFullWidth={true} as={Flex} justifyContent="space-between" isLoading={activating} size="lg"
-                    isDisabled={activating||disabled} variant={connected ? 'solid' : 'outline'}>
+                    isDisabled={activating||disabled} variant={connected ? 'solid' : 'outline'} key={`walle-${name}`}>
                       <Text>{name}</Text>
                       <Image src={logo} w="4" h="4" />
                   </Button>
