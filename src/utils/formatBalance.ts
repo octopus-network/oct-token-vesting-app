@@ -14,10 +14,13 @@ export const getBalanceAmount = (amount: BigNumber, decimals = 18) => {
   return new BigNumber(amount.toString()).dividedBy(new BigNumber(10).pow(decimals));
 }
 
-export const beautifyAmount = (amount: BigNumber | number | string, fixed = 2) => {
+export const beautifyAmount = (amount: BigNumber | number | string, fixed) => {
   if (typeof amount === 'number' || typeof amount === 'string') {
     amount = new BigNumber(amount);
   }
+  if (!fixed) {
+    fixed = amount.gt(0) && amount.lte(1) ? 4 : 2;
+  } 
   const str = amount.toFixed(fixed);
   const reg = str.indexOf('.') > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g;
   return str.replace(reg, '$1,');
