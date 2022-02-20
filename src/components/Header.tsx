@@ -33,7 +33,10 @@ const Header = () => {
   }
 
   useEffect(() => {
-    if (!account) return;
+    if (!account) {
+      setWalletModalOpen.on();
+      return;
+    }
     if (account && walletModalOpen) {
       setWalletModalOpen.off();
     }
@@ -60,7 +63,7 @@ const Header = () => {
           <Image src={OctoLogo} h="32px" />
           <HStack spacing={5} ml={12}>
             <Link aria-selected={true} _selected={selectedLinkStyle}>Vesting</Link>
-            <Link target="_blank" href="https://testnet.oct.network">Testnet App</Link>
+            <Link target="_blank" href="https://mainnet.oct.network">Octopus App</Link>
           </HStack>
         </Flex>
         <Box display={{ base: 'none', lg: 'flex' }}>
@@ -72,7 +75,7 @@ const Header = () => {
         </Box>
       </Flex>
     </Container>
-    <ConnectWalletModal isOpen={walletModalOpen} onClose={setWalletModalOpen.off} />
+    <ConnectWalletModal isOpen={walletModalOpen} />
     <AccountModal isOpen={accountModalOpen} onClose={setAccountModalOpen.off} />
     </>
   );

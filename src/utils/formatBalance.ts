@@ -14,7 +14,7 @@ export const getBalanceAmount = (amount: BigNumber, decimals = 18) => {
   return new BigNumber(amount.toString()).dividedBy(new BigNumber(10).pow(decimals));
 }
 
-export const beautifyAmount = (amount: BigNumber | number | string, fixed) => {
+export const beautifyAmount = (amount: BigNumber | number | string, fixed = 0) => {
   if (typeof amount === 'number' || typeof amount === 'string') {
     amount = new BigNumber(amount);
   }

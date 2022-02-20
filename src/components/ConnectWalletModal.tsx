@@ -49,11 +49,9 @@ const logoByConnectName = {
 }
 
 const ConnectWalletModal = ({
-  isOpen,
-  onClose
+  isOpen
 }: {
   isOpen: boolean;
-  onClose: VoidFunction;
 }) => {
   const { connector, activate, error } = useWeb3React<Web3Provider>();
   
@@ -72,11 +70,11 @@ const ConnectWalletModal = ({
   useInactiveListener(!triedEager || !!activatingConnector);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={() => {}}>
       <ModalOverlay />
       <ModalContent ml={2} mr={2}>
         <ModalHeader>Connect to wallet</ModalHeader>
-        <ModalCloseButton />
+     
         <ModalBody>
           <VStack spacing={4}>
             {

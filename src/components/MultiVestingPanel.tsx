@@ -35,14 +35,13 @@ const RefreshIcon = styled(Icon)<{ refreshing: boolean; }>`
   transform: translateZ(0);
 `;
 
-const Panel = ({ contract }) => {
+const MultiVestingPanel = ({ contract }) => {
   
   const { account, chainId } = useWeb3React();
   const [totalBenefit, setTotalBenefit] = useState(ZERO);
   const [unreleasedBalance, setUnreleasedBalance] = useState(ZERO);
   const [releasedBalance, setReleasedBalance] = useState(ZERO);
   const [withdrawedBalance, setWithdrawedBalance] = useState(ZERO);
-  const [beneficiary, setBeneficiary] = useState('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isWithdrawed, setIsWithdrawed] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -58,17 +57,15 @@ const Panel = ({ contract }) => {
     }
     setIsRefreshing(true);
     Promise.all([
-      contract.methods.totalBenefit().call(),
-      contract.methods.unreleasedBalance().call(),
-      contract.methods.releasedBalance().call(),
-      contract.methods.withdrawedBalance().call(),
-      contract.methods.beneficiary().call(),
-    ]).then(([benefit, unreleased, released, withdrawed, tmpBeneficiary]) => {
+      contract.methods.issuedBenefitOf(account).call(),
+      contract.methods.unreleasedAmountOf(account).call(),
+      contract.methods.releasedAmountOf(account).call(),
+      contract.methods.withdrawnAmountOf(account).call(),
+    ]).then(([benefit, unreleased, released, withdrawed]) => {
       setTotalBenefit(getBalanceAmount(benefit));
       setUnreleasedBalance(getBalanceAmount(unreleased));
       setReleasedBalance(getBalanceAmount(released));
       setWithdrawedBalance(getBalanceAmount(withdrawed));
-      setBeneficiary(tmpBeneficiary);
       setTimeout(() => {
         setIsRefreshing(false);
       }, 300);
@@ -78,10 +75,11 @@ const Panel = ({ contract }) => {
 
   const onWithdraw = async () => {
     setIsWithdrawing(true);
+
     try {
       await contract
         .methods
-        .withdraw()
+        .withdrawBenefitOf(account)
         .send({
           from: account
         }, (err, hash) => {
@@ -166,20 +164,7 @@ const Panel = ({ contract }) => {
             </HStack>
             <Heading fontSize="md" color="black">{beautifyAmount(releasedBalance)} OCT</Heading>
           </Flex>
-          <Flex color="gray" alignItems="flex-end">
-            <HStack minW="120px" fontSize="sm">
-            <Tooltip label="Beneficiary of tokens after they are released">
-              <QuestionOutlineIcon />
-            </Tooltip>
-            <Text>Beneficiary:</Text>
-            </HStack>
-            <Link href={`${explorerUrl}/address/${beneficiary}`} target="_blank">
-              <HStack color="octoColor.500" fontSize="sm">
-              <Text overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap" maxW="100px">{beneficiary}</Text>
-              <ExternalLinkIcon />
-              </HStack>
-            </Link>
-          </Flex>
+          
         </VStack>
       </Box>
       </Skeleton>
@@ -231,4 +216,4 @@ const Panel = ({ contract }) => {
   )
 }
 
-export default Panel;
+export default MultiVestingPanel;
