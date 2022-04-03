@@ -33,10 +33,7 @@ const Header = () => {
   }
 
   useEffect(() => {
-    if (!account) {
-      setWalletModalOpen.on();
-      return;
-    }
+ 
     if (account && walletModalOpen) {
       setWalletModalOpen.off();
     }

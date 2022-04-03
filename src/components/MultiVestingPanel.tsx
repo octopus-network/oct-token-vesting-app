@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
+
+import Web3 from 'web3';
 
 import {
   Box,
@@ -16,14 +18,16 @@ import {
   ModalCloseButton,
   ModalHeader,
   ModalBody,
+  IconButton,
   Icon,
   Link,
+  Input,
   HStack,
   Tooltip
 } from '@chakra-ui/react';
 
 import styled from 'styled-components';
-import { ExternalLinkIcon, QuestionOutlineIcon } from '@chakra-ui/icons';
+import { ExternalLinkIcon, QuestionOutlineIcon, EditIcon } from '@chakra-ui/icons';
 import { useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
 import { AiOutlineWarning } from 'react-icons/ai';
@@ -35,8 +39,12 @@ const RefreshIcon = styled(Icon)<{ refreshing: boolean; }>`
   transform: translateZ(0);
 `;
 
+const storedBeneficiay = window.localStorage.getItem('multi-vesting-beneficiary') || '';
+
 const MultiVestingPanel = ({ contract }) => {
   
+  const [inputAddress, setInputAddress] = useState('');
+  const [beneficiary, setBeneficiary] = useState(storedBeneficiay);
   const { account, chainId } = useWeb3React();
   const [totalBenefit, setTotalBenefit] = useState(ZERO);
   const [unreleasedBalance, setUnreleasedBalance] = useState(ZERO);
@@ -52,15 +60,15 @@ const MultiVestingPanel = ({ contract }) => {
   const explorerUrl = chainId === 1 ? 'https://www.etherscan.io' : 'https://ropsten.etherscan.io';
 
   const onRefresh = () => {
-    if (!account) {
+    if (!beneficiary) {
       return;
     }
     setIsRefreshing(true);
     Promise.all([
-      contract.methods.issuedBenefitOf(account).call(),
-      contract.methods.unreleasedAmountOf(account).call(),
-      contract.methods.releasedAmountOf(account).call(),
-      contract.methods.withdrawnAmountOf(account).call(),
+      contract.methods.issuedBenefitOf(beneficiary).call(),
+      contract.methods.unreleasedAmountOf(beneficiary).call(),
+      contract.methods.releasedAmountOf(beneficiary).call(),
+      contract.methods.withdrawnAmountOf(beneficiary).call(),
     ]).then(([benefit, unreleased, released, withdrawed]) => {
       setTotalBenefit(getBalanceAmount(benefit));
       setUnreleasedBalance(getBalanceAmount(unreleased));
@@ -79,7 +87,7 @@ const MultiVestingPanel = ({ contract }) => {
     try {
       await contract
         .methods
-        .withdrawBenefitOf(account)
+        .withdrawBenefitOf(beneficiary)
         .send({
           from: account
         }, (err, hash) => {
@@ -115,72 +123,116 @@ const MultiVestingPanel = ({ contract }) => {
   }
 
   useEffect(() => {
-    if (!contract) {
+    if (!beneficiary) {
       return;
     }
     onRefresh();
-  }, [contract]);
+  }, [beneficiary]);
+
+  const onNextStep = async () => {
+    setBeneficiary(inputAddress);
+    window.localStorage.setItem('multi-vesting-beneficiary', inputAddress);
+  }
+
+  const onChangeBeneficiary = () => {
+    window.localStorage.removeItem('multi-vesting-beneficiary');
+    setBeneficiary('');
+    setInputAddress('');
+  }
  
   return (
     <>
     <Box p={6} pb={8} boxShadow="octoShadow" borderRadius="8" bg="#fff">
       <Flex alignItems="center" justifyContent="space-between">
-        <Heading fontSize="2xl">My Vesting</Heading>
+        <Heading fontSize="2xl">Multi Vesting</Heading>
         {
-          account &&
+          beneficiary &&
           <Flex fontSize="sm" onClick={onRefresh} color="gray" cursor="pointer" alignItems="center">
             <RefreshIcon refreshing={isRefreshing ? 1 : 0} as={MdRefresh} w="4" h="4" />
             <Text>Refresh</Text>
           </Flex>
         }
       </Flex>
-      <Skeleton isLoaded={!isRefreshing && !!account}>
-      <Box p={4} mt={6} bg="rgba(120, 120, 150, .06)" borderRadius={5}>
-        <VStack spacing={3} alignItems="flex-start">
-          <Flex color="gray" alignItems="flex-end">
-            <HStack minW="120px" fontSize="sm">
-            <Tooltip label="The total amount of OCT token that the beneficiary can withdraw during the timelock duration">
-              <QuestionOutlineIcon />
-            </Tooltip>
-            <Text>Total Benefit:</Text>
-            </HStack>
-            <Heading fontSize="md" color="black">{beautifyAmount(totalBenefit)} OCT</Heading>
-          </Flex>
-          <Flex color="gray" alignItems="flex-end">
-            <HStack minW="120px" fontSize="sm">
-            <Tooltip label="Unreleased balance">
-              <QuestionOutlineIcon />
-            </Tooltip>
-            <Text>Unreleased:</Text>
-            </HStack>
-            <Heading fontSize="md" color="black">{beautifyAmount(unreleasedBalance)} OCT</Heading>
-          </Flex>
-          <Flex color="gray" alignItems="flex-end">
-            <HStack minW="120px" fontSize="sm">
-            <Tooltip label="Released balance, totalBenefit * the days passed since releaseStartTime / daysOfTimelock">
-              <QuestionOutlineIcon />
-            </Tooltip>
-            <Text>Released:</Text>
-            </HStack>
-            <Heading fontSize="md" color="black">{beautifyAmount(releasedBalance)} OCT</Heading>
-          </Flex>
-          
-        </VStack>
-      </Box>
-      </Skeleton>
+      {
+        beneficiary ?
+        <Skeleton isLoaded={!isRefreshing}>
+          <Box p={4} mt={6} bg="rgba(120, 120, 150, .06)" borderRadius={5}>
+            <VStack spacing={3} alignItems="flex-start">
+              <Flex color="gray" alignItems="flex-end">
+                <HStack minW="120px" fontSize="sm">
+                  <Tooltip label="Beneficiary of tokens after they are released">
+                    <QuestionOutlineIcon />
+                  </Tooltip>
+                  <Text>Beneficiary:</Text>
+                </HStack>
+                <HStack>
+                  <Link href={`${explorerUrl}/address/${beneficiary}`} target="_blank">
+                    <HStack color="octoColor.500" fontSize="sm">
+                    <Text overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap" maxW="100px">{beneficiary}</Text>
+                    
+                    </HStack>
+                  </Link>
+                  <IconButton aria-label="change" size="xs" onClick={onChangeBeneficiary}><EditIcon /></IconButton>
+                </HStack>
+              </Flex>
+              <Flex color="gray" alignItems="flex-end">
+                <HStack minW="120px" fontSize="sm">
+                <Tooltip label="The total amount of OCT token that the beneficiary can withdraw during the timelock duration">
+                  <QuestionOutlineIcon />
+                </Tooltip>
+                <Text>Total Benefit:</Text>
+                </HStack>
+                <Heading fontSize="md" color="black">{beautifyAmount(totalBenefit)} OCT</Heading>
+              </Flex>
+              <Flex color="gray" alignItems="flex-end">
+                <HStack minW="120px" fontSize="sm">
+                <Tooltip label="Unreleased balance">
+                  <QuestionOutlineIcon />
+                </Tooltip>
+                <Text>Unreleased:</Text>
+                </HStack>
+                <Heading fontSize="md" color="black">{beautifyAmount(unreleasedBalance)} OCT</Heading>
+              </Flex>
+              <Flex color="gray" alignItems="flex-end">
+                <HStack minW="120px" fontSize="sm">
+                <Tooltip label="Released balance, totalBenefit * the days passed since releaseStartTime / daysOfTimelock">
+                  <QuestionOutlineIcon />
+                </Tooltip>
+                <Text>Released:</Text>
+                </HStack>
+                <Heading fontSize="md" color="black">{beautifyAmount(releasedBalance)} OCT</Heading>
+              </Flex>
+              
+            </VStack>
+          </Box>
+        </Skeleton> :
+        <Box mt={6} borderRadius={5}>
+          <Input type="text" placeholder="Please input the beneficiary address" onChange={e => setInputAddress(e.target.value)}
+            borderRadius="full" size="lg" autoFocus />
+        </Box>
+      }
       <Box mt={4}>
-        <Skeleton isLoaded={!isRefreshing && !!account}>
-        <Button isFullWidth={true} size="lg" variant="solid" onClick={onWithdraw} isLoading={isWithdrawing}
-          isDisabled={
-            isWithdrawed || !contract || isWithdrawing || 
-            !account || withdrawedBalance.gte(releasedBalance)
-          }  borderRadius="30" colorScheme="octoColor">
-          { 
-            withdrawedBalance.gte(releasedBalance) || isWithdrawed ? 'Withdrawed' : 
-            `Withdraw ${beautifyAmount(releasedBalance.minus(withdrawedBalance))} OCT` 
-          }
-        </Button>
-        </Skeleton>
+        {
+          beneficiary ?
+          <Skeleton isLoaded={!isRefreshing && !!account}>
+            <Button isFullWidth={true} size="lg" variant="solid" onClick={onWithdraw} isLoading={isWithdrawing}
+              isDisabled={
+                isWithdrawed || !contract || isWithdrawing || 
+                !account || withdrawedBalance.gte(releasedBalance)
+              }  borderRadius="30" colorScheme="octoColor">
+              { 
+                withdrawedBalance.gte(releasedBalance) || isWithdrawed ? 'Withdrawed' : 
+                `Withdraw ${beautifyAmount(releasedBalance.minus(withdrawedBalance))} OCT` 
+              }
+            </Button>
+          </Skeleton> :
+          <Button isFullWidth={true} size="lg" variant="solid" borderRadius="full" colorScheme="octoColor" onClick={onNextStep} isDisabled={
+            !inputAddress || !Web3.utils.isAddress(inputAddress)
+          }>
+            Next Step
+          </Button>
+        }
+        
       </Box>
     </Box>
     <Flex mt={4} color="gray" fontSize="sm" borderRadius={5} justifyContent="center">

@@ -16,7 +16,6 @@ import {
   useToast,
   InputGroup,
   Icon,
-  InputLeftElement,
   InputRightElement,
   IconButton,
   Link,
@@ -57,6 +56,7 @@ const Welcome = ({ onOpen }) => {
       const web3 = new Web3(library.provider);
       const contract = new web3.eth.Contract(vestingAbi as any, vestingAddress);
       onOpen(contract);
+      
     } catch(err) {
       toast({
         position: 'top-right',
@@ -83,7 +83,7 @@ const Welcome = ({ onOpen }) => {
         </VStack>
         <Box mt={12}>
           <InputGroup size="lg">
-            <Input bg="white" autoFocus placeholder="your vesting contract address"
+            <Input bg="white" autoFocus placeholder="vesting contract address/beneficiary address"
               value={vestingAddress} onChange={(e: any) => setVestingAddress(e.target.value)} />
             {
               vestingAddress &&
