@@ -26,6 +26,7 @@ import { CloseIcon } from '@chakra-ui/icons';
 import { AiOutlineGithub } from 'react-icons/ai';
 import { HiOutlineArrowNarrowRight } from 'react-icons/hi';
 import vestingAbi from 'abis/vesting.json';
+import { multiVestingContractAddress } from 'config/addresses';
 import otto from 'assets/otto.png';
 
 const localVestingAddress = window.localStorage.getItem('oct-vesting-address');
@@ -71,6 +72,10 @@ const Welcome = ({ onOpen }) => {
     setVestingAddress('');
   }
 
+  const onInputMultiVestingContract = () => {
+    setVestingAddress(multiVestingContractAddress);
+  }
+
   return (
     <Container maxW="460px">
       <Flex flexDirection="column" pt={6}>
@@ -82,7 +87,11 @@ const Welcome = ({ onOpen }) => {
           <Text color="gray">Open with your vesting contract</Text>
         </VStack>
         <Box mt={12}>
-          <InputGroup size="lg">
+          <Flex justifyContent="space-between" alignItems="center">
+            <Text color="gray">Input Address</Text>
+            <Button size="sm" variant="link" colorScheme="blue" onClick={onInputMultiVestingContract}>multi-vesting contract</Button>
+          </Flex>
+          <InputGroup size="lg" mt={3}>
             <Input bg="white" autoFocus placeholder="vesting contract address/beneficiary address"
               value={vestingAddress} onChange={(e: any) => setVestingAddress(e.target.value)} />
             {
