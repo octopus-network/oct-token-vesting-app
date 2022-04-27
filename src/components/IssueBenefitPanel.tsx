@@ -46,7 +46,8 @@ export default function IssueBenefitPanel({ contract }) {
         .send({
           from: account,
         })
-
+      setAddress('')
+      setAmount('')
       toast({
         title: 'Success',
         description: 'Issued benefit',
@@ -75,7 +76,7 @@ export default function IssueBenefitPanel({ contract }) {
     <div style={{ marginBottom: 20 }}>
       <Box p={6} pb={8} boxShadow="octoShadow" borderRadius="8" bg="#fff">
         <Flex alignItems="center" justifyContent="space-between">
-          <Heading fontSize="2xl">Add Beneficiaries</Heading>
+          <Heading fontSize="2xl">Add Beneficiary</Heading>
         </Flex>
         <Box mt={5} borderRadius={5}>
           <Input
