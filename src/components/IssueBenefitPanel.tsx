@@ -15,7 +15,6 @@ export default function IssueBenefitPanel({ contract }) {
 
   const { account, library } = useWeb3React()
   useEffect(() => {
-    console.log(contract.methods)
     contract.methods
       .owner()
       .call()
@@ -39,7 +38,7 @@ export default function IssueBenefitPanel({ contract }) {
       if (!days.trim() || Number(days.trim()) <= 0) {
         throw new Error('Invalid days')
       }
-      const totalAmount = getDecimalAmount(amount)
+      const totalAmount = getDecimalAmount(amount).toString()
       const releaseStartTime = Math.floor(date.getTime() / 1000)
       const daysOfTimelock = Number(days)
       await contract.methods
@@ -59,7 +58,7 @@ export default function IssueBenefitPanel({ contract }) {
           title: 'Error',
           description: error.message,
           status: 'error',
-          duration: 3000,
+          duration: 5000,
           isClosable: true,
         })
       }
