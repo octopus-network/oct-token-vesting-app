@@ -43,7 +43,9 @@ export default function IssueBenefitPanel({ contract }) {
       const daysOfTimelock = Number(days)
       await contract.methods
         .issueBenefitTo(address, totalAmount, releaseStartTime, daysOfTimelock)
-        .call()
+        .send({
+          from: account,
+        })
 
       toast({
         title: 'Success',
