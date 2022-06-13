@@ -89,6 +89,7 @@ const ConnectWalletModal = ({
                   <Button cursor="pointer" onClick={() => {
                       setActivatingConnector(currentConnector);
                       activate(connectorsByName[name]);
+                      window.localStorage.removeItem('disconnected');
                     }} isFullWidth={true} as={Flex} justifyContent="space-between" isLoading={activating} size="lg"
                     isDisabled={activating||disabled} variant={connected ? 'solid' : 'outline'} key={`walle-${name}`}>
                       <Text>{name}</Text>

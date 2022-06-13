@@ -3,6 +3,8 @@ import { useWeb3React } from '@web3-react/core';
 
 import { injected } from 'utils/connectors';
 
+const disconnectedInLocalStorage = window.localStorage.getItem('disconnected');
+
 export function useEagerConnect() {
   const { activate, active } = useWeb3React();
 
@@ -10,7 +12,7 @@ export function useEagerConnect() {
 
   useEffect(() => {
     injected.isAuthorized().then((isAuthorized: boolean) => {
-      if (isAuthorized) {
+      if (isAuthorized && !disconnectedInLocalStorage) {
         activate(injected, undefined, true).catch(() => {
           setTried(true);
         });

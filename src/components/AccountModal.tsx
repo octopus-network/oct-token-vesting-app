@@ -41,6 +41,7 @@ const AccountModal = ({
   const onLogout = () => {
     onClose();
     deactivate();
+    window.localStorage.setItem('disconnected', 'true');
   }
 
   const explorerUrl = chainId === 1 ? 'https://www.etherscan.io' : 'https://ropsten.etherscan.io';
