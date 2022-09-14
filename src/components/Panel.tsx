@@ -72,7 +72,6 @@ const Panel = ({ contract }) => {
       setTimeout(() => {
         setIsRefreshing(false);
       }, 300);
-
     });
   }
 

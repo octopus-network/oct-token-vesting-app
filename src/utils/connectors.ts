@@ -14,7 +14,6 @@ const POLLING_INTERVAL = 12000;
 export const walletconnect = new WalletConnectConnector({
   rpc: { 1: RPC_URLS[1], 3: RPC_URLS[3] },
   qrcode: true,
-  pollingInterval: POLLING_INTERVAL
 });
 
 export const ledger = new LedgerConnector({ 

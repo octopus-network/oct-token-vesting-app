@@ -59,7 +59,7 @@ const Footer = () => {
         <Polling />
       </Flex>
     </Container>
-    <ConnectWalletModal isOpen={walletModalOpen} onClose={setWalletModalOpen.off} />
+    <ConnectWalletModal isOpen={walletModalOpen} />
     <AccountModal isOpen={accountModalOpen} onClose={setAccountModalOpen.off} />
     </>
   )
