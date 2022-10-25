@@ -38,7 +38,7 @@ const StatBox = ({ title, value, icon }) => {
 
 const Overview = () => {
   const { data: circulation } = useSWR(
-    `https://www.oct.network/circulation`, 
+    `https://oct.network/circulation`, 
     (url) => axios.get(url).then(res => res.data.toFixed(2))
   );
 
