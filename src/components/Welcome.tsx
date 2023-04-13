@@ -113,7 +113,7 @@ const Welcome = ({ onOpen }) => {
         <Box mt={6}>
           <OpenButton
             size="lg"
-            isFullWidth
+            width="100%"
             colorScheme="octoColor"
             onClick={() => _onOpen(vestingAddress)}
             disabled={!vestingAddress}
@@ -130,7 +130,7 @@ const Welcome = ({ onOpen }) => {
         <Box mt={6}>
           <OpenButton
             size="lg"
-            isFullWidth
+            width="100%"
             colorScheme="octoColor"
             onClick={() => {
               _onOpen(multiVestingContractAddress)
@@ -145,7 +145,7 @@ const Welcome = ({ onOpen }) => {
             as={Link}
             fontSize="sm"
             fontWeight="normal"
-            isFullWidth
+            width="100%"
             variant="link"
             href="https://github.com/octopus-network/oct-token-eth"
             target="_blank"

@@ -114,7 +114,7 @@ export default function IssueBenefitPanel({ contract }) {
         </Box>
         <Box mt={5} borderRadius={5}>
           <Button
-            isFullWidth={true}
+            width="100%"
             size="lg"
             variant="solid"
             colorScheme="octoColor"
