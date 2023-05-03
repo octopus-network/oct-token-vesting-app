@@ -1,6 +1,6 @@
 import React from 'react'
 import axios from 'axios'
-import dayjs from 'dayjs'
+
 import {
   Flex,
   Heading,
@@ -43,22 +43,10 @@ const StatBox = ({ title, value, icon }) => {
   )
 }
 
-const totalIssuance = 100000000
-
-const beginTime = dayjs('2021-09-01')
-const endTime = dayjs('2024-09-01')
-
-const totalDays = endTime.diff(beginTime, 'days')
-
 const Overview = () => {
-  let pastDays = dayjs().diff(beginTime, 'days')
-
-  if (pastDays > totalDays) {
-    pastDays = totalDays
-  }
-
-  const circulation = Number(
-    (((35 + (65 * pastDays) / totalDays) * totalIssuance) / 100).toFixed(2)
+  const { data: circulation } = useSWR(
+    `https://oct.network/circulation`,
+    (url) => axios.get(url).then((res) => res.data.toFixed(2))
   )
 
   const { data: coinData } = useSWR(
