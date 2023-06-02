@@ -115,22 +115,6 @@ const Chart = () => {
     }, 100)
   }
 
-  const onAreaMouseMove = useCallback(
-    ({ isTooltipActive, activePayload }) => {
-      if (isTooltipActive) {
-        if (activePayload && activePayload.length) {
-          const { price, time } = activePayload[0].payload
-          setCurrentTimePrice([time, price])
-        }
-      } else if (prices.length) {
-        setCurrentTimePrice(prices[prices.length - 1])
-      } else {
-        setCurrentTimePrice([0, 0])
-      }
-    },
-    [prices]
-  )
-
   return (
     <Box>
       <Flex alignItems="center" justifyContent="space-between">

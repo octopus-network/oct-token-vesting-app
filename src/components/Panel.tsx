@@ -55,6 +55,7 @@ const Panel = ({ contract }) => {
   const explorerUrl =
     chainId === 1 ? 'https://www.etherscan.io' : 'https://ropsten.etherscan.io'
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const onRefresh = () => {
     if (!account) {
       return
@@ -119,11 +120,10 @@ const Panel = ({ contract }) => {
   }
 
   useEffect(() => {
-    if (!contract) {
-      return
+    if (contract) {
+      onRefresh()
     }
-    onRefresh()
-  }, [contract, onRefresh])
+  }, [contract])
 
   return (
     <>
@@ -291,3 +291,6 @@ const Panel = ({ contract }) => {
 }
 
 export default Panel
+function useCallback(arg0: () => void) {
+  throw new Error('Function not implemented.')
+}

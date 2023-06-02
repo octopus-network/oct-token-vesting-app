@@ -130,10 +130,9 @@ const MultiVestingPanel = ({ contract }) => {
   }
 
   useEffect(() => {
-    if (!beneficiary) {
-      return
+    if (beneficiary) {
+      onRefresh()
     }
-    onRefresh()
   }, [beneficiary])
 
   const onNextStep = async () => {
