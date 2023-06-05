@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useWeb3React } from '@web3-react/core'
-
 import {
   Flex,
   Box,
@@ -14,14 +12,14 @@ import {
 
 import { getBalanceAmount, beautifyAmount } from 'utils/formatBalance'
 import { useTokenContract } from 'hooks/useContract'
-import ConnectWalletModal from './ConnectWalletModal'
 import AccountModal from './AccountModal'
 
 import OctoLogo from 'assets/logo.png'
 import AccountBox from './AccountBox'
+import useWalletStat from 'hooks/useWalletStat'
 
 const Header = () => {
-  const { account } = useWeb3React()
+  const { account } = useWalletStat()
   const [walletModalOpen, setWalletModalOpen] = useBoolean(false)
   const [accountModalOpen, setAccountModalOpen] = useBoolean(false)
 
@@ -79,7 +77,6 @@ const Header = () => {
           </Box>
         </Flex>
       </Container>
-      <ConnectWalletModal isOpen={walletModalOpen} />
       <AccountModal
         isOpen={accountModalOpen}
         onClose={setAccountModalOpen.off}

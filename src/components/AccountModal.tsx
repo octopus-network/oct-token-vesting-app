@@ -1,6 +1,4 @@
-import React from 'react';
-import { useWeb3React } from '@web3-react/core';
-
+import React from 'react'
 import {
   Modal,
   ModalOverlay,
@@ -20,31 +18,39 @@ import {
   ListItem,
   useClipboard,
   Spinner,
-} from '@chakra-ui/react';
+} from '@chakra-ui/react'
 
-import { CopyIcon, CheckIcon, ExternalLinkIcon } from '@chakra-ui/icons';
-import { AiOutlineWarning, AiOutlineCheckCircle } from 'react-icons/ai';
-import useTxns from 'hooks/useTransactions';
-import StatusIcon from './StatusIcon';
+import { CopyIcon, CheckIcon, ExternalLinkIcon } from '@chakra-ui/icons'
+import { AiOutlineWarning, AiOutlineCheckCircle } from 'react-icons/ai'
+import useTxns from 'hooks/useTransactions'
+import StatusIcon from './StatusIcon'
+import { useConnectWallet, useSetChain } from '@web3-onboard/react'
 
 const AccountModal = ({
   isOpen,
-  onClose
+  onClose,
 }: {
-  isOpen: boolean;
-  onClose: VoidFunction;
+  isOpen: boolean
+  onClose: VoidFunction
 }) => {
-  const { account, chainId, deactivate } = useWeb3React();
-  const { hasCopied, onCopy } = useClipboard(account);
-  const { txns, clearTxns } = useTxns();
+  const [{ connectedChain }] = useSetChain()
+  const [{ wallet }, disconnect] = useConnectWallet()
+
+  const chainId = connectedChain.id
+  const account = wallet.accounts[0].address
+  const { hasCopied, onCopy } = useClipboard(account)
+  const { txns, clearTxns } = useTxns()
 
   const onLogout = () => {
-    onClose();
-    deactivate();
-    window.localStorage.setItem('disconnected', 'true');
+    onClose()
+    disconnect()
+    window.localStorage.setItem('disconnected', 'true')
   }
 
-  const explorerUrl = chainId === 1 ? 'https://www.etherscan.io' : 'https://ropsten.etherscan.io';
+  const explorerUrl =
+    chainId === '0x1'
+      ? 'https://www.etherscan.io'
+      : 'https://ropsten.etherscan.io'
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -56,72 +62,93 @@ const AccountModal = ({
           <Box borderRadius={10} p={4} border="1px solid #eee">
             <Flex justifyContent="space-between" alignItems="center">
               <Text color="gray">Connected Account</Text>
-              <Button size="sm" variant="outline" onClick={onLogout}>Logout</Button>
+              <Button size="sm" variant="outline" onClick={onLogout}>
+                Logout
+              </Button>
             </Flex>
             <Flex alignItems="center" mt={2}>
-              <StatusIcon />
-              <Heading fontSize="xl" ml={1}>{account?.substr(0, 6)}...{account?.substr(-4)}</Heading>
+              <Heading fontSize="xl" ml={1}>
+                {account?.substring(0, 6)}...{account?.substring(-4)}
+              </Heading>
             </Flex>
             <HStack alignItems="center" mt={2} spacing={4}>
-              <Button variant="unstyled" size="sm" color="gray" onClick={onCopy}>
-                { hasCopied ? <CheckIcon mr={1} /> : <CopyIcon mr={1} /> }
-                { hasCopied ? 'Copied' : 'Copy Address' }
+              <Button
+                variant="unstyled"
+                size="sm"
+                color="gray"
+                onClick={onCopy}
+              >
+                {hasCopied ? <CheckIcon mr={1} /> : <CopyIcon mr={1} />}
+                {hasCopied ? 'Copied' : 'Copy Address'}
               </Button>
-              <Button as={Link} variant="link" size="sm" color="gray" href={`${explorerUrl}/address/${account}`} target="_blank">
+              <Button
+                as={Link}
+                variant="link"
+                size="sm"
+                color="gray"
+                href={`${explorerUrl}/address/${account}`}
+                target="_blank"
+              >
                 <ExternalLinkIcon mr={1} /> View on Explorer
               </Button>
             </HStack>
           </Box>
-          
         </ModalBody>
         <Box bg="#f3f3f9" p={4} mt={2} borderBottomRadius="8">
-          {
-            txns.length ?
+          {txns.length ? (
             <>
               <Flex alignItems="center" justifyContent="space-between">
                 <Text>Recent Transactions</Text>
-                <Button variant="unstyled" size="sm" color="red" onClick={clearTxns}>Clear All</Button>
-              </Flex> 
+                <Button
+                  variant="unstyled"
+                  size="sm"
+                  color="red"
+                  onClick={clearTxns}
+                >
+                  Clear All
+                </Button>
+              </Flex>
               <List spacing={3} mt={3} maxH="180px" overflowY="auto">
-                {
-                  txns.map((tx, idx) => (
-                    <ListItem key={`tx-${idx}`}>
-                      <Flex justifyContent="space-between" alignItems="center">
-                        <Link href={`${explorerUrl}/tx/${tx.hash}`} target="_blank" color={
-                          tx.receipt ?
-                          (
-                            tx.receipt.status === 1 ? 'green' : 'red'
-                          ) :
-                          'gray'
-                        }>
-                          <HStack>
-                            <Heading fontSize="sm">{tx.summary}</Heading>
-                            <ExternalLinkIcon ml="1" />
-                          </HStack>
-                        </Link>
-                        {
-                          tx.receipt ?
-                          (
-                            tx.receipt.status === 1 ?
-                            <Icon as={AiOutlineCheckCircle} color="green" /> :
-                            <Icon as={AiOutlineWarning} color="red" /> 
-                          ) :
-                          <Spinner size="xs" color="gray" speed="1s" />
+                {txns.map((tx, idx) => (
+                  <ListItem key={`tx-${idx}`}>
+                    <Flex justifyContent="space-between" alignItems="center">
+                      <Link
+                        href={`${explorerUrl}/tx/${tx.hash}`}
+                        target="_blank"
+                        color={
+                          tx.receipt
+                            ? tx.receipt.status === 1
+                              ? 'green'
+                              : 'red'
+                            : 'gray'
                         }
-                      </Flex>
-                    </ListItem>
-                  ))
-                }
+                      >
+                        <HStack>
+                          <Heading fontSize="sm">{tx.summary}</Heading>
+                          <ExternalLinkIcon ml="1" />
+                        </HStack>
+                      </Link>
+                      {tx.receipt ? (
+                        tx.receipt.status === 1 ? (
+                          <Icon as={AiOutlineCheckCircle} color="green" />
+                        ) : (
+                          <Icon as={AiOutlineWarning} color="red" />
+                        )
+                      ) : (
+                        <Spinner size="xs" color="gray" speed="1s" />
+                      )}
+                    </Flex>
+                  </ListItem>
+                ))}
               </List>
-            </> :
+            </>
+          ) : (
             <Text>Your transactions will appear here...</Text>
-          }
-          
+          )}
         </Box>
       </ModalContent>
-      
     </Modal>
-  );
+  )
 }
 
-export default AccountModal;
+export default AccountModal

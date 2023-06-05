@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import dayjs from 'dayjs'
 import axios from 'axios'
 
@@ -168,12 +168,7 @@ const Chart = () => {
       <Skeleton isLoaded={prices.length > 0}>
         <Box height="360px" mt="6">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              width={500}
-              height={400}
-              data={klineData}
-              // onMouseMove={onAreaMouseMove}
-            >
+            <AreaChart width={500} height={400} data={klineData}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#e3964e" stopOpacity={0.5} />

@@ -1,6 +1,4 @@
-import React, { useState, useMemo } from 'react'
-import { useWeb3React } from '@web3-react/core'
-
+import React, { useState } from 'react'
 import Web3 from 'web3'
 
 import {
@@ -37,6 +35,7 @@ import { MdRefresh } from 'react-icons/md'
 import { AiOutlineWarning } from 'react-icons/ai'
 import { getBalanceAmount, beautifyAmount, ZERO } from 'utils/formatBalance'
 import useTxns from 'hooks/useTransactions'
+import useWalletStat from 'hooks/useWalletStat'
 
 const RefreshIcon = styled(Icon)<{ refreshing: boolean }>`
   animation: ${({ refreshing }) =>
@@ -52,7 +51,7 @@ const storedBeneficiay =
 const MultiVestingPanel = ({ contract }) => {
   const [inputAddress, setInputAddress] = useState('')
   const [beneficiary, setBeneficiary] = useState(storedBeneficiay)
-  const { account, chainId } = useWeb3React()
+  const { account, chainId } = useWalletStat()
   const [totalBenefit, setTotalBenefit] = useState(ZERO)
   const [unreleasedBalance, setUnreleasedBalance] = useState(ZERO)
   const [releasedBalance, setReleasedBalance] = useState(ZERO)
@@ -65,7 +64,9 @@ const MultiVestingPanel = ({ contract }) => {
   const { appendTx } = useTxns()
 
   const explorerUrl =
-    chainId === 1 ? 'https://www.etherscan.io' : 'https://ropsten.etherscan.io'
+    chainId === '0x1'
+      ? 'https://www.etherscan.io'
+      : 'https://ropsten.etherscan.io'
 
   const onRefresh = () => {
     if (!beneficiary) {

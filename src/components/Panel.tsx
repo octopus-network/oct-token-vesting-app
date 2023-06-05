@@ -1,6 +1,4 @@
 import React, { useState } from 'react'
-import { useWeb3React } from '@web3-react/core'
-
 import {
   Box,
   Heading,
@@ -29,6 +27,7 @@ import { MdRefresh } from 'react-icons/md'
 import { AiOutlineWarning } from 'react-icons/ai'
 import { getBalanceAmount, beautifyAmount, ZERO } from 'utils/formatBalance'
 import useTxns from 'hooks/useTransactions'
+import useWalletStat from 'hooks/useWalletStat'
 
 const RefreshIcon = styled(Icon)<{ refreshing: boolean }>`
   animation: ${({ refreshing }) =>
@@ -39,7 +38,7 @@ const RefreshIcon = styled(Icon)<{ refreshing: boolean }>`
 `
 
 const Panel = ({ contract }) => {
-  const { account, chainId } = useWeb3React()
+  const { account, chainId } = useWalletStat()
   const [totalBenefit, setTotalBenefit] = useState(ZERO)
   const [unreleasedBalance, setUnreleasedBalance] = useState(ZERO)
   const [releasedBalance, setReleasedBalance] = useState(ZERO)
@@ -123,7 +122,7 @@ const Panel = ({ contract }) => {
     if (contract) {
       onRefresh()
     }
-  }, [contract])
+  }, [contract?.options.address])
 
   return (
     <>
