@@ -80,10 +80,24 @@ const ConnectWalletModal = ({ isOpen }: { isOpen: boolean }) => {
               return (
                 <Button
                   cursor="pointer"
-                  onClick={() => {
-                    setActivatingConnector(currentConnector)
-                    activate(connectorsByName[name])
-                    window.localStorage.removeItem('disconnected')
+                  onClick={async () => {
+                    try {
+                      setActivatingConnector(currentConnector)
+                      await activate(
+                        connectorsByName[name],
+                        (e) => {
+                          console.log('e', e)
+                        },
+                        true
+                      )
+                      window.localStorage.removeItem('disconnected')
+                    } catch (error) {
+                      await (window as any).ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x1' }],
+                      })
+                      console.log('error', error)
+                    }
                   }}
                   width="100%"
                   as={Flex}
